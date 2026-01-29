@@ -13,10 +13,10 @@
         <a href="#quick-start">Quick Start</a>
         </li>
         <li>
-        <a href="#approach">Approach</a>
+        <a href="#docker">Docker</a>
         </li>
         <li>
-        <a href="#docker">Docker</a>
+        <a href="#approach">Approach</a>
         </li>
         <li>
         <a href="#configuration">Configuration</a>
@@ -27,13 +27,7 @@
     </ol>
 </details>
 
-<br>
-
 A real-time, tightly coupled LiDAR-Inertial SLAM algorithm developed on top of [IKFoM](https://github.com/hku-mars/IKFoM) _C++_ library. This project's implementation is based on the existing algorithms [FASTLIO2](https://github.com/hku-mars/FAST_LIO), [LIMO-Velo](https://github.com/Huguet57/LIMO-Velo) and [DLIO](https://github.com/vectr-ucla/direct_lidar_inertial_odometry).
-
-__🎉 News! 🎉__
-  - Relocalization via [KISS-Matcher](https://github.com/MIT-SPARK/KISS-Matcher) in any previously saved map (pcd) is now possible thanks to [Victor](https://github.com/victhormoreno)! _Check out the `relocation/KISS-matcher` branch._
-  - _Comming soon!_ Loop-closure detection using [KISS-Matcher](https://github.com/MIT-SPARK/KISS-Matcher) in future branch `loop/KISS-matcher`.
 
 `Fast-LIMO` has been developed as a __thread-safe__ _C++_ library with [Eigen3](https://eigen.tuxfamily.org/index.php?title=Main_Page) and [PCL](https://pointclouds.org/) as its only dependencies. This way, it can be used outside the ROS framework __without any changes__, making it more portable. This project acts as a ROS wrapper of the self-developed [fast_limo](include/fast_limo/)'s library.
 
@@ -95,32 +89,6 @@ If you plan to use `Fast-LIMO` please make sure to give some love to [LIMO-Velo]
 </details>
 
 <details>
-    <summary>ROS (Noetic) wrapper:</summary>
-    <ol>
-        <li>
-        <a href="./include/fast_limo/">fast_limo</a>
-        </li>
-        <li><a href="http://wiki.ros.org/pcl_ros">pcl_ros</a>
-        </li>
-        <li>
-        <a href="http://wiki.ros.org/sensor_msgs">sensor_msgs</a>
-        </li>
-        <li>
-        <a href="http://wiki.ros.org/geometry_msgs">geometry_msgs</a>
-        </li>
-        <li>
-        <a href="https://wiki.ros.org/tf2">tf2</a>
-        </li>
-        <li>
-        <a href="https://wiki.ros.org/visualization_msgs">visualization_msgs</a>
-        </li>
-        <li>
-        <a href="https://wiki.ros.org/nav_msgs">nav_msgs</a>
-        </li>
-    </ol>
-</details>
-
-<details>
     <summary>ROS2 (Humble) wrapper:</summary>
     <ol>
         <li>
@@ -149,14 +117,40 @@ If you plan to use `Fast-LIMO` please make sure to give some love to [LIMO-Velo]
     </ol>
 </details>
 
+<details>
+    <summary>ROS (Noetic) wrapper:</summary>
+    <ol>
+        <li>
+        <a href="./include/fast_limo/">fast_limo</a>
+        </li>
+        <li>
+        <a href="http://wiki.ros.org/pcl_ros">pcl_ros</a>
+        </li>
+        <li>
+        <a href="http://wiki.ros.org/sensor_msgs">sensor_msgs</a>
+        </li>
+        <li>
+        <a href="http://wiki.ros.org/geometry_msgs">geometry_msgs</a>
+        </li>
+        <li>
+        <a href="https://wiki.ros.org/tf2">tf2</a>
+        </li>
+        <li>
+        <a href="https://wiki.ros.org/visualization_msgs">visualization_msgs</a>
+        </li>
+        <li>
+        <a href="https://wiki.ros.org/nav_msgs">nav_msgs</a>
+        </li>
+    </ol>
+</details>
+
 ## Future Work (To Do)
 ### DevOps
-- [X] ROS2 branch (`ros2-humble`). 
+- [X] ROS2 branch. 
 ### New Features
-- [X] Take into account GPS data (`loop/scancontext`). _Pose-graph optimization using [GTSAM](https://github.com/borglab/gtsam)._
-- [X] Add loop closure strategy (`loop/scancontext`). _Loop Closure detection with [ScanContext](https://ieeexplore.ieee.org/document/8593953)._
-- [X] Relocalize in previously saved pcd map (`relocation/KISS-matcher`). _[KISS-Matcher](https://github.com/MIT-SPARK/KISS-Matcher) for global registration and [GICP](https://github.com/fetty31/nano_gicp)-based coarse-to-fine correction._
-- [ ] Add loop closure strategy (`loop/KISS-matcher`). _Loop Closure detection with [KISS-Matcher](https://github.com/MIT-SPARK/KISS-Matcher)._
+- [X] Take into account GPS data. _Pose-graph optimization using [GTSAM](https://github.com/borglab/gtsam)_
+- [X] Add loop closure strategy. _Loop Closure detection with [ScanContext](https://ieeexplore.ieee.org/document/8593953)._
+- [ ] Relocalize in previously saved pcl map. _Probably ICP-based correction for initial pose._
 
 :envelope_with_arrow: _Feel free to reach out for new ideas or questions!_ :envelope_with_arrow:
 
@@ -169,13 +163,11 @@ git clone https://github.com/fetty31/fast_LIMO
 _More than half of the storage space needed to clone this repo is due to the [README gifs](doc/). There's a branch updated with the `master` but without all this media files called `no_media`._
 
 ### 1. Building fast LIMO
-Use default `catkin_make` or `catkin build` to build the code. By default it will compile under the `CMAKE_BUILD_TYPE="Release"` flag.
-
-For `ros2-humble` branch, use default `colcon build`.
+Use `colcon build --symlink-install` to build the code. By default it will compile under the `CMAKE_BUILD_TYPE="Release"` flag.
 
 ### 2. Running fast LIMO
 ```sh
-roslaunch fast_limo fast_limo.launch
+ros2 launch fast_limo fast_limo.launch.py
 ```
 
 Afterwards, you should be seeing this output _(if `verbose` param is set to true)_:
@@ -187,33 +179,16 @@ Afterwards, you should be seeing this output _(if `verbose` param is set to true
 
 You can also run `Fast-LIMO` together with an rviz instance with:
 ```sh
-roslaunch fast_limo fast_limo.launch rviz:=true
+ros2 launch fast_limo fast_limo.launch.py rviz:=True
 ```
 
 ### 4. Quickly check its performance
 [IN THIS FOLDER](https://www.dropbox.com/scl/fi/60u6xq0daav9enecluroh/cat15_trackdrive.bag?rlkey=jfjba58h8hohfi8b7kpi8zsvx&st=jck682n6&dl=0) you can find the rosbag file (___850.41 MB___) of [this CAT15X trackdrive](https://youtu.be/mk9U0lRWr-0?si=j4mM6e5dzihfCLJM). Download it and try it out!
 ```sh
-roslaunch fast_limo cat.launch rviz:=true
+ros2 launch fast_limo cat.launch.py rviz:=True
 ```
 
 _Note that this algorithm's precision greatly depends on the pointcloud & IMU timestamps, so remember to run the rosbag with __use_sim_time=true__ and __--clock__ flag._
-
-### 5. Loop Closure (optional)
-If you're interested in having loop closure for long-term odometry drift correction checkout to the `loop/scancontext` branch. 
-
-Apart from the steps 1-4, the looper node has to be launched:
-```sh
-roslaunch fast_limo loop.launch robot:=cat
-```
-
-### 6. Map-based relocalization (optional)
-If you're interested in relocalizing in a previously saved pcd map checkout to the `relocation/KISS-matcher` branch. 
-
-Apart from the steps 1-4, the reloca node has to be launched:
-```sh
-roslaunch fast_limo reloca.launch map_name:=your_map_name
-```
-
 
 ## Docker
 A [Dockerfile](docker/Dockerfile) is provided in order to build a `Fast-LIMO` image on top of `ros2-humble` or `ros-noetic` desktop image.
@@ -244,9 +219,7 @@ If you are interested in truly understanding the working principle of this SLAM 
 
 This project implements the same concept as [LIMO-Velo](https://github.com/Huguet57/LIMO-Velo) but without any accumulation procedure. Instead, `Fast-LIMO` operates with two concurrent threads. One thread handles the propagation of newly received IMU measurements through the iKFoM (prediction stage), while the other thread uses these propagated states to deskew the received point cloud, match the deskewed scan to the map, and update the iKFoM (measurement stage) by minimizing point-to-plane distances.
 
-`Fast-LIMO` supports the standard IMU-LiDAR configuration, where the IMU provides new measurements at a rate of 100-500 Hz and the LiDAR sends a new point cloud approximately at 10 Hz. __However, Fast-LIMO has been developed with the purpose to be used with a modified LiDAR driver capable of sending each scan packet as soon as it is ready, instead of waiting for the LiDAR to complete a full rotation.__ 
-
-_NOTE: for a modified Velodyne driver, check [this fork](https://github.com/fetty31/velodyne)._
+`Fast-LIMO` supports the standard IMU-LiDAR configuration, where the IMU provides new measurements at a rate of 100-500 Hz and the LiDAR sends a new point cloud approximately at 10 Hz. __However, Fast-LIMO has been developed with the purpose to be used with a modified LiDAR driver capable of sending each scan packet as soon as it is ready, instead of waiting for the LiDAR to complete a full rotation.__
 
 ## Configuration
 Here, the configuration file for `Fast-LIMO` is explained. _Note that some parameters relate to the __sensor type__ and __extrinsics__. The remaining parameters generally do not require modification for standard use, as they are associated with computational load limits or precision thresholds._

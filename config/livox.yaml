@@ -4,17 +4,19 @@ fast_limo:
   ros__parameters:
     topics:
       input:
-        lidar: /ona2/sensors/pandar_front/cloud
-        imu: /ona2/sensors/imu_front/imu_uncalib
+        lidar: /livox/lidar
+        imu: /livox/imu
+      # output:
 
     frames: # output frames (the transform between frames will be broadcasted)
       world: map
       body: base_link
       tf_pub: true
-      
+
     num_threads: 20 # OpenMP threads (will be equal to $(nproc) if it is set higher)
 
-    sensor_type: 2  # LiDAR type (0: OUSTER \ 1: VELODYNE \ 2: HESAI \ 3: LIVOX)
+    sensor_type: 3  # LiDAR type (0: OUSTER \ 1: VELODYNE \ 2: HESAI \ 3: LIVOX)
+    use_livox_custom_msg: false  # Set to true if using livox_ros_driver2/msg/CustomMsg, false for sensor_msgs/msg/PointCloud2
 
     debug: true     # fill useful intermediate pcl (deskewed, final_raw...) for visualizing purposes
     verbose: true   # print debug/performance board
@@ -31,19 +33,12 @@ fast_limo:
 
     extrinsics: # w.r.t baselink [SI]
       imu:
-        t: [ 0.87, 0.44, 0.17 ]
+        t: [ 0., 0., 0. ]
         R: [ 1.,  0.,  0.,
               0.,  1.,  0.,
               0.,  0.,  1. ]
-
       lidar:
-        t: [ 0.87,  -0.44,  -0.201 ]
-        # R: [ 0.774, -0.633, 0.022,
-        #     0.633, 0.774,  -0.026,
-        #     -0.0005, 0.03,  0.999 ] # +40º
-        # R: [ 0.774, 0.633, -0.0005,
-        #     -0.633, 0.774,  0.03,
-        #     0.022, -0.026,  0.999 ] # -40º
+        t: [ 0.,  0.,  0. ]
         R: [ 1.,  0.,  0.,
               0.,  1.,  0.,
               0.,  0.,  1. ]

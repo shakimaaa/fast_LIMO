@@ -1,6 +1,5 @@
 #pragma once
 
-
 // Copyright (c) 2023 Jun Zhu, Tsinghua University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -603,3 +602,4 @@ struct Octree {
 } // namespace dummy
 
 } // namespace fast_limo
+

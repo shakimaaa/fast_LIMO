@@ -1,15 +1,19 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 project(fast_limo)
 
-add_compile_options(-std=c++14)
+# Default to C++17
+add_compile_options(-std=c++17)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
 set(CMAKE_BUILD_TYPE "Release")
 
-find_package( PCL 1.8 REQUIRED )
+find_package( PCL 1.12 REQUIRED )
 include_directories(${PCL_INCLUDE_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 link_directories(${PCL_LIBRARY_DIRS})
-
-message("PCL version: ${PCL_VERSION}")
 
 find_package( Eigen3 REQUIRED )
 include_directories(${EIGEN3_INCLUDE_DIR})
@@ -27,26 +31,19 @@ set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  pcl_ros
-  sensor_msgs
-  geometry_msgs
-  visualization_msgs
-  nav_msgs
-  tf2
-)
-
-catkin_package(
- INCLUDE_DIRS include
- LIBRARIES ${PROJECT_NAME}
- CATKIN_DEPENDS roscpp pcl_ros sensor_msgs geometry_msgs tf2 visualization_msgs nav_msgs
- DEPENDS EIGEN3 PCL
-)
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(pcl_conversions REQUIRED)
+find_package(livox_ros_driver2 REQUIRED)
 
 include_directories(
   include
-  ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INLCUDE_DIRS}
   ${PCL_INLCUDE_DIRS}
 )
@@ -59,6 +56,8 @@ file(REMOVE ${CMAKE_BINARY_DIR}/test_cpuid.cpp)
 if(HAS_CPUID)
   add_compile_definitions(HAS_CPUID)
 endif()
+
+message("PCL version: ${PCL_VERSION}")
 
 # IKFOM
 add_library(ikfom
@@ -79,19 +78,28 @@ add_library(${PROJECT_NAME}
             include/fast_limo/Objects/State.cpp
             include/fast_limo/Objects/Plane.cpp
             include/fast_limo/Objects/Match.cpp
+            include/fast_limo/Objects/Octree.hpp
             )
 target_compile_options(${PROJECT_NAME} PRIVATE ${OpenMP_FLAGS})
 target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES} ${OpenMP_LIBS} ikfom)
 
 # ROS execs
 add_executable(${PROJECT_NAME}_multi_exec
-              src/main.cpp
+              src/LimoWrapper.cpp
               )
-
-add_dependencies(${PROJECT_NAME}_multi_exec ${catkin_EXPORTED_TARGETS})
-
-target_link_libraries(${PROJECT_NAME}_multi_exec ${PROJECT_NAME} ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+ament_target_dependencies(${PROJECT_NAME}_multi_exec rclcpp sensor_msgs geometry_msgs visualization_msgs nav_msgs tf2 tf2_ros pcl_conversions livox_ros_driver2)
+target_link_libraries(${PROJECT_NAME}_multi_exec ${PROJECT_NAME} ${PCL_LIBRARIES})
 
 # Binaries
-install( TARGETS ${PROJECT_NAME}_multi_exec
-         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION} )
+install( TARGETS 
+  ${PROJECT_NAME}_multi_exec
+  DESTINATION lib/${PROJECT_NAME} )
+
+# Install launch files.
+install(DIRECTORY
+  launch
+  config
+  DESTINATION share/${PROJECT_NAME}/
+)
+
+ament_package()

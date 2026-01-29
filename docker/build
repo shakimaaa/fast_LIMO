@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-DOCKER_IMG="fastlimo-noetic-image"
+DOCKER_IMG="fastlimo-ros2-image"
 PROJECT_ROOT="$(cd "$(dirname "$0")"; pwd)"
 
 echo "----- Building Docker image from ${PROJECT_ROOT}/Dockerfile -----"
